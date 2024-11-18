@@ -1,0 +1,54 @@
+---HTTP SERVER IN RUST---
+
+---LIBRARIES USED---
+- Tokio: Asynchronous runtime used for handling concurrent connections.
+
+tokio::net::TcpListener: creates a TCP listener.
+tokio::io::{AsyncReadExt, AsyncWriteExt}: async extensions for reading and writing to socket.
+tokio::fs: for reading files asynchronously.
+
+- Tracing: for structured logging.
+
+tracing::{info, warn, error}: for logging events (connections, errors, responses).
+HashMap: for storing HTTP request headers.
+
+- Main Function:
+Logging Initialization: tracing_subscriber::fmt::init() initializes structured logging.
+TCP Listener: binds the server to 127.0.0.1:8080, accepting incoming connections.
+Connection Handling: each connection is handled in a separate task using tokio::spawn. A buffer is used to read incoming data.
+Request Parsing: request is parsed to extract the HTTP method, path, headers, and body.
+Routing: based on the request method and path, the route_request function is called to generate a response. The response is sent back to the client.
+
+- Functions:
+parse_request_with_body: parses an HTTP request. It extracts:
+
+HTTP method (e.g., GET, POST)
+Request path (e.g., /static/file.html)
+Headers (as a HashMap)
+Body (if any)
+route_request: Routes the request based on the method and path. It supports:
+
+GET: Serves static files or returns a "Not Found" error.
+POST: Handles form submissions or JSON payloads at the /submit endpoint.
+serve_file: Serves a static file from the filesystem, setting the appropriate MIME type based on the file extension (e.g., .html, .css, .js).
+
+handle_post: Processes POST requests, including:
+
+Handling JSON and form-encoded data at /submit.
+Returning a 415 status code for unsupported media types.
+get_mime_type: Determines the MIME type of a file based on its extension (e.g., .html maps to text/html).
+
+- How It Works:
+GET /: Returns a simple welcome message.
+GET /static/path: Serves static files (e.g., images, HTML, CSS).
+POST /submit: Processes form or JSON data.
+404: If the route or method is not recognized, a 404 response is returned.
+405: If the HTTP method is unsupported, a 405 Method Not Allowed is returned.
+415: For unsupported content types in POST requests, the server responds with 415 Unsupported Media Type.
+Example Request/Response:
+GET /static/index.html:
+Request: GET /static/index.html HTTP/1.1
+Response: The content of index.html, served with the appropriate MIME type (e.g., text/html).
+POST /submit:
+Request (JSON): POST /submit HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{"key":"value"}
+Response: 200 OK with the message "Received JSON: {"key":"value"}"

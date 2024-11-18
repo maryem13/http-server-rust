@@ -1,0 +1,14 @@
+[package]
+name = "http_server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json", "blocking"] }  # For making HTTP requests with support for JSON and blocking operations
+tokio = { version = "1.30", features = ["full"] }                # For async runtime and I/O
+tracing = "0.1.37"                                               # For structured logging
+tracing-subscriber = "0.3.16"                                    # For formatting and logging output
+bytes = "1.0"                                                    # For bytes crate
+
